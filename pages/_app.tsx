@@ -3,6 +3,9 @@ import type { AppProps } from 'next/app';
 import { AppCacheProvider } from '@mui/material-nextjs/v13-pagesRouter';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Montserrat } from 'next/font/google';
+import createEmotionCache from '@emotion/cache';
+import { CacheProvider } from '@emotion/react';
+import { CssBaseline } from '@mui/material';
 import Head from 'next/head';
 
 const montserrat = Montserrat({
@@ -14,6 +17,7 @@ const montserrat = Montserrat({
 });
 
 const theme = createTheme({
+	cssVariables: true,
 	typography: {
 		fontFamily: 'var(--font-montserrat)',
 		h1: {
@@ -23,18 +27,22 @@ const theme = createTheme({
 	}
 });
 
+const clientSideEmotionCache = createEmotionCache({ key: 'css' });
+
 export default function App({ Component, pageProps, ...props }: AppProps) {
 	return (
 		<AppCacheProvider {...props}>
 			<Head>
-				<link rel="icon" href="/favicon.ico" />
+				<link rel="icon" href="/PriorityTire_Favicon.webp" type="image/x-icon" />
 			</Head>
-
-			<ThemeProvider theme={theme}>
-				<main className={montserrat.variable}>
-					<Component {...pageProps} />
-				</main>
-			</ThemeProvider>
+			<CacheProvider value={clientSideEmotionCache}>
+				<ThemeProvider theme={theme}>
+					<CssBaseline />
+					<main className={montserrat.variable}>
+						<Component {...pageProps} />
+					</main>
+				</ThemeProvider>
+			</CacheProvider>
 		</AppCacheProvider>
 	);
 }
